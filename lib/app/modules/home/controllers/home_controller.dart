@@ -62,11 +62,16 @@ class AuthController extends GetxController {
     // }
   }
 
-  Future<void> share( String title) async {
+  clearf(){
+    descController.text = '';
+    titleController.text = '';
+    selectedImagePath.value = '';
+  }
+
+  Future<void> share(String title) async {
     await FlutterShare.share(
         title: 'Notes App',
         text: title,
-       
         chooserTitle: 'Where you want to share');
   }
 

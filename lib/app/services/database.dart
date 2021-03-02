@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
+import 'package:getx_firebase/app/modules/home/controllers/home_controller.dart';
 import 'package:getx_firebase/app/modules/notes_model.dart';
 
 class FirestoreService {
@@ -14,6 +15,8 @@ class FirestoreService {
         .set(model.toMap(), options)
         .then((value) => print("Notes Added"))
         .catchError((error) => print("Failed to add Notes: $error"));
+
+    Get.find<AuthController>().clearf();
   }
 
   Stream<List<NotesModel>> getNotesList() {
@@ -30,7 +33,7 @@ class FirestoreService {
 
   Future<void> updateNotes(NotesModel model) async {
     //  _firestore.collection("notes").doc(nid).update()
-     var options = SetOptions(merge: true);
+    //  var options = SetOptions(merge: true);
 
     await _firestore
         .collection("notes")
@@ -38,6 +41,8 @@ class FirestoreService {
         .update(model.toMap())
         .then((value) => print("Notes updated"))
         .catchError((error) => print("Failed to add Notes: $error"));
+            Get.find<AuthController>().clearf();
+
   }
 
   //Delete

@@ -2,10 +2,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:getx_firebase/app/modules/home/controllers/home_controller.dart';
+import 'package:getx_firebase/app/modules/home/views/search.dart';
 import 'package:getx_firebase/app/modules/notes_model.dart';
 import 'package:getx_firebase/app/services/database.dart';
 import 'package:getx_firebase/app/widget/card.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter/services.dart';
 
 AuthController controller = Get.find(); // it'll work!
 
@@ -19,100 +21,91 @@ class HomeView extends StatelessWidget {
       appBar: AppBar(
         title: Text('Notes List'),
         centerTitle: true,
-      ),
-      body: Column(
-        children: [
-          Container(
-            height: 100,
-            child:  TextField(
-                controller: controller.searchController,
-                decoration:
-                    InputDecoration(labelText: 'Search', hintText: 'Search..'),
-                onChanged: (value) {
-                  value = value.toLowerCase();
-                  controller.notes.where((note) {
-                    var n = note.title.toLowerCase();
-                    print(n);
-                    print('+++++++++++++++++++++++++++++++++++++++++++++++');
-                    return n.contains(value);
-                  });
-                },
-              ),
-            
-          ),
-          Obx(() => Expanded(
-                child: ListView.builder(
-                  itemCount: controller.notes.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Card(
-                        child: ListTile(
-                          onLongPress: () {
-                            Get.defaultDialog(
-                                title: 'Choose Action',
-                                content: Column(
-                                  children: [
-                                    FlatButton(
-                                      onPressed: () {
-                                        print('delete item');
-                                        deleteItem(
-                                            controller.notes[index].notesId);
-                                        Get.back();
-                                      },
-                                      child: Text(
-                                        'DELETE',
-                                        style: TextStyle(color: Colors.red),
-                                      ),
-                                    ),
-                                    FlatButton(
-                                      onPressed: () {
-                                        Get.to(TodoCard(
-                                            todo: controller.notes[index]));
-                                        // updateNote(controller.notes[index].notesId);
-                                      },
-                                      child: Text(
-                                        'EDIT',
-                                        style: TextStyle(color: Colors.green),
-                                      ),
-                                    ),
-                                    FlatButton(
-                                      onPressed: () {
-                                        print('delete item');
-                                        shareData(controller.notes[index].title);
-                                        // Get.back();
-                                      },
-                                      child: Text(
-                                        'SHARE',
-                                        style: TextStyle(color: Colors.blue),
-                                      ),
-                                    ),
-                                  ],
-                                ));
-                          },
-                          title: Text(controller.notes[index].title != null
-                              ? controller.notes[index].title
-                              : 'g'),
-                          subtitle: Text(controller.notes[index].desc) ?? '',
-                          leading: CircleAvatar(
-                            backgroundColor: Colors.amberAccent,
-                            child: Text(
-                                controller.notes[index].title[0].capitalize),
-                          ),
-                          trailing: Container(
-                            height: 50,
-                            width: 50,
-                            child:
-                                Image.file(File(controller.notes[index].image)),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              )),
+        actions: [
+          InkWell(
+              onTap: () async {
+                final result = await showSearch<NotesModel>(
+                  context: context,
+                  delegate: NameSearch(controller.notes),
+                );
+                print(result);
+                print("+++++++++++++++++++++++++");
+              },
+              child: Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: Icon(Icons.search),
+              ))
         ],
       ),
+      body: Obx(() => controller.notes.length != null
+          ? ListView.builder(
+              itemCount: controller.notes.length,
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Card(
+                    child: ListTile(
+                      onLongPress: () {
+                        Get.defaultDialog(
+                            title: 'Choose Action',
+                            content: Column(
+                              children: [
+                                FlatButton(
+                                  onPressed: () {
+                                    print('delete item');
+                                    deleteItem(controller.notes[index].notesId);
+                                    Get.back();
+                                  },
+                                  child: Text(
+                                    'DELETE',
+                                    style: TextStyle(color: Colors.red),
+                                  ),
+                                ),
+                                FlatButton(
+                                  onPressed: () {
+                                    Get.to(TodoCard(
+                                        todo: controller.notes[index]));
+                                    // updateNote(controller.notes[index].notesId);
+                                  },
+                                  child: Text(
+                                    'EDIT',
+                                    style: TextStyle(color: Colors.green),
+                                  ),
+                                ),
+                                FlatButton(
+                                  onPressed: () {
+                                    print('delete item');
+                                    shareData(controller.notes[index].title);
+                                    // Get.back();
+                                  },
+                                  child: Text(
+                                    'SHARE',
+                                    style: TextStyle(color: Colors.blue),
+                                  ),
+                                ),
+                              ],
+                            ));
+                      },
+                      title: Text(controller.notes[index].title != null
+                          ? controller.notes[index].title
+                          : 'g'),
+                      subtitle: Text(controller.notes[index].desc) ?? '',
+                      leading: CircleAvatar(
+                        backgroundColor: Colors.amberAccent,
+                        child:
+                            Text(controller.notes[index].title[0].capitalize),
+                      ),
+                      trailing: Container(
+                        height: 50,
+                        width: 50,
+                        child: Image.file(File(controller.notes[index].image)),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            )
+          : Center(child: CircularProgressIndicator())),
       floatingActionButton: FloatingActionButton(
           child: Icon(Icons.add),
           onPressed: () {
@@ -144,9 +137,8 @@ class HomeView extends StatelessWidget {
                             decoration:
                                 InputDecoration(labelText: 'Description')),
                         SizedBox(height: 10),
-                        Obx(() => controller.selectedImagePath.value == ''
-                            ? Text('')
-                            : Image.file(
+                        Obx(() => 
+                           Image.file(
                                 File(controller.selectedImagePath.value),
                                 height: 100,
                                 width: 100,
@@ -189,7 +181,7 @@ class HomeView extends StatelessWidget {
                           child: Icon(Icons.camera_alt),
                         ),
                         SizedBox(
-                          height: 100,
+                          height: 30,
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -198,7 +190,23 @@ class HomeView extends StatelessWidget {
                             RaisedButton(
                               color: Colors.red,
                               onPressed: () {
-                                if (controller.titleController.value != null) {
+                                if (controller.titleController.value != null &&
+                                    controller.descController.value != null &&
+                                    controller.selectedImagePath.value !=
+                                        null) {
+                                  //   Get.snackbar("Erro", "Please write title",
+                                  //       snackPosition: SnackPosition.BOTTOM,
+                                  //       backgroundColor: Colors.red);
+                                  // } else if (controller.descController.value ==
+                                  //     null) {
+                                  //   Get.snackbar("Error", "Please write discription",
+                                  //       snackPosition: SnackPosition.BOTTOM,
+                                  //         backgroundColor: Colors.red);
+                                  // } else if (controller.selectedImagePath.value ==
+                                  //     null) {
+                                  //   Get.snackbar("Error", "Please select image",
+                                  //        backgroundColor: Colors.red, snackPosition: SnackPosition.BOTTOM);
+                                  // } else {
                                   var title = controller.titleController.value;
                                   var desc = controller.descController.value;
                                   var data = NotesModel(
@@ -208,8 +216,6 @@ class HomeView extends StatelessWidget {
                                       notesId: controller.uuid.v1());
 
                                   addNote(data);
-                                } else {
-                                  Get.snackbar('Error', 'Please write notes');
                                 }
                               },
                               child: Text('Save'),
@@ -232,8 +238,8 @@ class HomeView extends StatelessWidget {
   void addNote(NotesModel model) async {
     print(model.toString());
     await FirestoreService().addNotes(model);
-    controller.descController.text = '';
-    controller.titleController.text = '';
+    controller.clearf();
+
   }
 
   void deleteItem(String id) async {

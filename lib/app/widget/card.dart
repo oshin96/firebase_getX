@@ -25,6 +25,7 @@ class TodoCard extends GetView<AuthController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey,
       body: Center(
         child: Container(
           margin: EdgeInsets.only(top: 50),
@@ -45,9 +46,8 @@ class TodoCard extends GetView<AuthController> {
                         controller.titleController.text = n;
                         print(controller.titleController.value);
                       },
-                      // controller: controller.titleController,
                       decoration: InputDecoration(
-                        labelText: todo.title,
+                        labelText: 'Title',
                       ),
                       style: TextStyle(
                         color: Colors.red,
@@ -67,7 +67,7 @@ class TodoCard extends GetView<AuthController> {
                       },
                       // controller: controller.titleController,
                       decoration: InputDecoration(
-                        labelText: todo.title,
+                        labelText: 'Description',
                       ),
                       style: TextStyle(
                         color: Colors.red,
@@ -76,55 +76,55 @@ class TodoCard extends GetView<AuthController> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 10,),
+                  SizedBox(
+                    height: 10,
+                  ),
                   todo.image == ''
-                      ? Image.asset(
-                          'images/download.jpg',
-                          height: 100,
-                          width: 100,
-                        )
+                      ? Image.asset("images/download.jpg",width:100,height:100)
                       : Image.file(
                           File(todo.image),
                           height: 100,
                           width: 100,
                         ),
-                        Align(
-                          child: Text(
-                            'Select Image',
-                            style: TextStyle(fontSize: 14.0),
-                          ),
-                          alignment: Alignment.center,
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        InkWell(
-                          onTap: () {
-                            Get.defaultDialog(
-                                barrierDismissible: true,
-                                title: 'Select',
-                                content: Column(
-                                  children: [
-                                    FlatButton(
-                                      color: Colors.grey,
-                                      child: Text('Camera'),
-                                      onPressed: () {
-                                        controller.getImage(ImageSource.camera);
-                                      },
-                                    ),
-                                    FlatButton(
-                                      color: Colors.grey,
-                                      child: Text('Gallery'),
-                                      onPressed: () {
-                                        controller
-                                            .getImage(ImageSource.gallery);
-                                      },
-                                    ),
-                                  ],
-                                ));
-                          },
-                          child: Icon(Icons.camera_alt),
-                        ),
+                  Align(
+                    child: Text(
+                      'Select Image',
+                      style: TextStyle(fontSize: 14.0),
+                    ),
+                    alignment: Alignment.center,
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  InkWell(
+                    onTap: () {
+                      Get.defaultDialog(
+                          barrierDismissible: true,
+                          title: 'Select',
+                          content: Column(
+                            children: [
+                              FlatButton(
+                                color: Colors.grey,
+                                child: Text('Camera'),
+                                onPressed: () {
+                                  controller.getImage(ImageSource.camera);
+                                  Get.back();
+                                },
+                              ),
+                              FlatButton(
+                                color: Colors.grey,
+                                child: Text('Gallery'),
+                                onPressed: ()  {
+                                  controller.getImage(ImageSource.gallery);
+                                   Get.back();
+                                },
+                              ),
+                            ],
+                          ));
+                    },
+                    child: Icon(Icons.camera_alt),
+                  ),
+                  SizedBox(height: 10,),
                   RaisedButton(
                     child: Text('Update'),
                     onPressed: () {
@@ -134,6 +134,7 @@ class TodoCard extends GetView<AuthController> {
                       var data =
                           NotesModel(title: t, desc: d, notesId: todo.notesId);
                       FirestoreService().updateNotes(data);
+                      Get.back();
                     },
                   )
                 ],
