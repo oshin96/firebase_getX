@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "789329786304",
+    "project_id": "flutter-firebase-getx",
+    "storage_bucket": "flutter-firebase-getx.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:789329786304:android:374146367e9afbfc2ec425",
+        "android_client_info": {
+          "package_name": "com.oshin.getx_firebase"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "789329786304-96gd5cavqvnt7bip4ogeo5vn895sp02n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAEtQxIbYHbpl6aizTf36h3cpkeEQPnA_o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "789329786304-96gd5cavqvnt7bip4ogeo5vn895sp02n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
